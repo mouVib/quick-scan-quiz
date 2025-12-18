@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import QRScannerFrame from "@/components/QRScannerFrame";
+import QRScanner from "@/components/QRScanner";
 import QuizContainer from "@/components/QuizContainer";
 import QuizResults from "@/components/QuizResults";
 import { QrCode, Scan, BookOpen, Zap, Users } from "lucide-react";
+import { toast } from "sonner";
 
 type ViewState = "landing" | "scanning" | "quiz" | "results";
 
@@ -13,10 +14,13 @@ const Index = () => {
 
   const handleStartScan = () => {
     setView("scanning");
-    // Simulate scanning process
-    setTimeout(() => {
-      setView("quiz");
-    }, 2500);
+  };
+
+  const handleScanSuccess = (decodedText: string) => {
+    toast.success("QR Code scanned successfully!");
+    console.log("Scanned QR Code:", decodedText);
+    // Navigate to quiz after successful scan
+    setView("quiz");
   };
 
   const handleQuizComplete = (score: number, total: number) => {
@@ -31,22 +35,10 @@ const Index = () => {
 
   if (view === "scanning") {
     return (
-      <div className="min-h-screen gradient-scanner flex flex-col items-center justify-center p-6">
-        <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-2xl font-bold text-primary-foreground mb-2">
-            Scanning QR Code...
-          </h1>
-          <p className="text-muted-foreground">
-            Position the QR code within the frame
-          </p>
-        </div>
-        
-        <QRScannerFrame />
-        
-        <p className="mt-8 text-sm text-muted-foreground animate-pulse">
-          Loading quiz...
-        </p>
-      </div>
+      <QRScanner 
+        onScanSuccess={handleScanSuccess}
+        onClose={handleRestart}
+      />
     );
   }
 
